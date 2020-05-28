@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="f03105ea-6111-4f37-ad3b-39784394fc3c" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="809d1679-63cf-4b1e-9591-6c515b12cd17" >
+		<http:request-connection host="dummy.restapiexample.com" /> 
+	</http:request-config>
+	<flow name="checkapiFlow" doc:id="13298507-003c-42d4-9859-603a25e917c3" >
+		<http:listener doc:name="Listener" doc:id="f41f750e-ede5-406d-9762-038dd345bd52" config-ref="HTTP_Listener_config" path="/"/>
+		<http:request method="GET" doc:name="Request" doc:id="9e73d020-a213-49f2-a59e-605098eacb4e" config-ref="HTTP_Request_configuration" path="/api/v1/employees" outputMimeType="application/json" followRedirects="true" sendBodyMode="ALWAYS" requestStreamingMode="NEVER" responseTimeout="#[90000]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="890f5da6-7451-4d94-9177-7cfd065fd993" message="#[payload]"/>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="5b945d26-2276-401b-8b77-10ac6be870b2" /> 
+		<logger message="This log is for Splunk : #[payload]" level="INFO" doc:name="Logger"/>
+		<logger message="#[message.payload]" level="INFO" category="splunk.log" doc:name="LogIncomingRequest"/>
+	</flow>  
+</mule>
